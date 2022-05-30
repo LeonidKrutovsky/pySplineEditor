@@ -10,8 +10,10 @@ class MainWindow(QMainWindow):
         self.spline_view = SplineView()
         self.setCentralWidget(self.spline_view)
         self._create_menubar()
-        control_panel = ControlPanel()
+        control_panel = ControlPanel(self.maximumWidth(), self.maximumHeight())
         self.statusBar().addWidget(control_panel)
+        self.spline_view.current_knot_changed.connect(control_panel.set_state)
+        control_panel.state_changed.connect(self.spline_view.set_current_knot)
 
     def _create_menubar(self):
         menubar = self.menuBar()

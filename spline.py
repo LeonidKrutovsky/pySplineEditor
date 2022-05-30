@@ -1,22 +1,11 @@
-from dataclasses import dataclass
 from typing import List, Optional
-from PyQt5.QtCore import QPointF, QPoint
 from PyQt5.QtGui import QPolygonF
-
-
-
-class Knot:
-    pos: QPointF
-    tension: float = 0.0
-    bias: float = 0.0
-    continuity: float = 0.0
-
-    def __init__(self, pos: QPoint):
-        self.pos = QPointF(pos)
+from PyQt5.QtCore import QPoint
+from knot import Knot
 
 
 class Spline:
-    def __init__(self, subdivs=10):
+    def __init__(self, subdivs=40):
         self.curve: Optional[QPolygonF] = QPolygonF()
         self.knots = []
         self.subdivs = subdivs
@@ -33,6 +22,16 @@ class Spline:
 
     def get_knots(self) -> List[Knot]:
         return self.knots
+
+    def set_knot(self, index: int, knot: Knot):
+        self.knots[index] = knot
+        self.curve = None
+
+    def find_knot_by_pos(self, pos: QPoint) -> int:
+        for index, knot in enumerate(self.knots):
+            if (knot.pos - pos).manhattanLength() < 8:
+                return index
+        return None
 
     def _interpolate(self):
         if len(self.knots) < 2:
